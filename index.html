@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Scout Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+
+  <!-- SPLASH / AUTH SCREEN -->
+  <div id="screen-auth" class="screen active">
+    <div class="auth-bg">
+      <div class="auth-grid"></div>
+    </div>
+    <div class="auth-content">
+      <div class="logo-block">
+        <div class="logo-icon">SC</div>
+        <div class="logo-text">
+          <span class="logo-main">SCOUT</span>
+          <span class="logo-sub">CHALLENGE</span>
+        </div>
+      </div>
+      <p class="auth-tagline">Spot the next generation.<br/>Before everyone else does.</p>
+
+      <div class="auth-form" id="auth-form">
+        <div class="form-group">
+          <label>Your scout name</label>
+          <input type="text" id="input-pseudo" placeholder="e.g. TalentHunter_92" maxlength="20" autocomplete="off"/>
+        </div>
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" id="input-email" placeholder="you@email.com" autocomplete="off"/>
+        </div>
+        <button class="btn-primary" onclick="handleAuth()">
+          <span>Join Scout Challenge</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <p class="auth-note">Already have an account? <a href="#" onclick="handleLogin()">Sign in</a></p>
+      </div>
+
+      <div class="auth-form hidden" id="login-form">
+        <div class="form-group">
+          <label>Your email address</label>
+          <input type="email" id="input-login-email" placeholder="you@email.com" autocomplete="off"/>
+        </div>
+        <button class="btn-primary" onclick="handleLoginSubmit()">
+          <span>Sign in</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <p class="auth-note">New here? <a href="#" onclick="handleRegister()">Create account</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="screen-app" class="screen">
+
+    <!-- HOME SCREEN -->
+    <div id="page-home" class="page active">
+      <div class="page-header">
+        <div>
+          <div class="gw-label">GAMEWEEK <span id="gw-number">1</span></div>
+          <h1 class="page-title">My Squad</h1>
+        </div>
+        <div class="deadline-badge" id="deadline-badge">
+          <span class="deadline-dot"></span>
+          <span id="deadline-text">FRI 2PM</span>
+        </div>
+      </div>
+
+      <div class="home-content">
+        <!-- Captain slot -->
+        <div class="section-label">CAPTAIN <span class="label-accent">×1.5</span></div>
+        <div class="captain-slot" id="captain-slot" onclick="goToPicks('captain')">
+          <div class="slot-empty" id="captain-empty">
+            <span class="slot-plus">+</span>
+            <span class="slot-text">Pick your captain</span>
+          </div>
+          <div class="player-card-captain hidden" id="captain-card"></div>
+        </div>
+
+        <!-- Starters -->
+        <div class="section-label" style="margin-top:16px">STARTERS</div>
+        <div class="starters-grid" id="starters-grid">
+          <div class="starter-slot" onclick="goToPicks('starter')">
+            <div class="slot-empty-small"><span class="slot-plus">+</span></div>
+          </div>
+          <div class="starter-slot" onclick="goToPicks('starter')">
+            <div class="slot-empty-small"><span class="slot-plus">+</span></div>
+          </div>
+          <div class="starter-slot" onclick="goToPicks('starter')">
+            <div class="slot-empty-small"><span class="slot-plus">+</span></div>
+          </div>
+        </div>
+
+        <!-- Sub -->
+        <div class="section-label" style="margin-top:16px">SUB</div>
+        <div class="sub-slot" id="sub-slot" onclick="goToPicks('sub')">
+          <div class="slot-empty-sub">
+            <span class="slot-plus">+</span>
+            <span class="slot-text">Add a sub — activates if a starter doesn't play</span>
+          </div>
+        </div>
+
+        <!-- Flair section -->
+        <div class="flair-section hidden" id="flair-section">
+          <div class="section-label">FLAIR PICKS <span class="label-flair">+3 PTS</span></div>
+          <div id="flair-list"></div>
+        </div>
+
+        <!-- CTA -->
+        <button class="btn-primary btn-confirm hidden" id="btn-confirm">
+          <span>Lock In Selection</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PICKS SCREEN -->
+    <div id="page-picks" class="page">
+      <div class="page-header">
+        <button class="btn-back" onclick="goBack()">←</button>
+        <div>
+          <div class="gw-label">GAMEWEEK <span class="gw-number-ref">1</span></div>
+          <h1 class="page-title">Pick a Gem</h1>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="search-input" placeholder="Search player..." oninput="filterPlayers()"/>
+      </div>
+
+      <!-- League filters -->
+      <div class="filter-scroll">
+        <button class="filter-btn active" data-league="all" onclick="setLeagueFilter(this, 'all')">All</button>
+        <button class="filter-btn" data-league="Premier League" onclick="setLeagueFilter(this, 'Premier League')">🏴󠁧󠁢󠁥󠁮󠁧󠁿 PL</button>
+        <button class="filter-btn" data-league="Liga" onclick="setLeagueFilter(this, 'Liga')">🇪🇸 Liga</button>
+        <button class="filter-btn" data-league="Ligue 1" onclick="setLeagueFilter(this, 'Ligue 1')">🇫🇷 L1</button>
+        <button class="filter-btn" data-league="Bundesliga" onclick="setLeagueFilter(this, 'Bundesliga')">🇩🇪 BL</button>
+        <button class="filter-btn" data-league="Serie A" onclick="setLeagueFilter(this, 'Serie A')">🇮🇹 SA</button>
+        <button class="filter-btn" data-league="Eredivisie" onclick="setLeagueFilter(this, 'Eredivisie')">🇳🇱 ERE</button>
+        <button class="filter-btn" data-league="Primeira Liga" onclick="setLeagueFilter(this, 'Primeira Liga')">🇵🇹 LP</button>
+      </div>
+
+      <!-- Position filters -->
+      <div class="position-filters">
+        <button class="pos-btn active" data-pos="all" onclick="setPosFilter(this, 'all')">All</button>
+        <button class="pos-btn" data-pos="ATT" onclick="setPosFilter(this, 'ATT')">ATT</button>
+        <button class="pos-btn" data-pos="MID" onclick="setPosFilter(this, 'MID')">MID</button>
+        <button class="pos-btn" data-pos="DEF" onclick="setPosFilter(this, 'DEF')">DEF</button>
+        <button class="pos-btn" data-pos="GK" onclick="setPosFilter(this, 'GK')">GK</button>
+      </div>
+
+      <div class="players-list" id="players-list"></div>
+    </div>
+
+    <!-- RANKING SCREEN -->
+    <div id="page-ranking" class="page">
+      <div class="page-header">
+        <div>
+          <div class="gw-label">GAMEWEEK <span class="gw-number-ref">1</span></div>
+          <h1 class="page-title">Rankings</h1>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="setRankTab(this, 'overall')">Overall</button>
+        <button class="tab" onclick="setRankTab(this, 'gw')">This GW</button>
+      </div>
+
+      <div id="podium" class="podium"></div>
+      <div id="rank-list" class="rank-list"></div>
+    </div>
+
+    <!-- PROFILE SCREEN -->
+    <div id="page-profile" class="page">
+      <div class="page-header">
+        <h1 class="page-title">My Profile</h1>
+        <button class="btn-logout" onclick="handleLogout()">Sign out</button>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-avatar" id="profile-avatar">V</div>
+        <div class="profile-info">
+          <div class="profile-name" id="profile-name">Scout</div>
+          <div class="profile-meta" id="profile-meta">🇫🇷 · Rookie Scout</div>
+        </div>
+      </div>
+
+      <!-- XP bar -->
+      <div class="xp-block">
+        <div class="xp-labels">
+          <span class="xp-level" id="xp-level">Rookie Scout</span>
+          <span class="xp-pts" id="xp-pts">0 / 500 XP</span>
+        </div>
+        <div class="xp-bar">
+          <div class="xp-fill" id="xp-fill" style="width:0%"></div>
+        </div>
+        <div class="xp-next" id="xp-next">500 XP to reach Pro Scout</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="section-label">MY STATS</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-pts">0</div>
+          <div class="stat-label">Total pts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-gw">0</div>
+          <div class="stat-label">Gameweeks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value flair-color" id="stat-flair">0</div>
+          <div class="stat-label">Flair picks</div>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="section-label" style="margin-top:20px">BADGES</div>
+      <div class="badges-grid" id="badges-grid"></div>
+
+      <!-- GW History -->
+      <div class="section-label" style="margin-top:20px">GAMEWEEK HISTORY</div>
+      <div id="gw-history" class="gw-history"></div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" onclick="goToPage('home')" data-page="home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-btn" onclick="goToPage('picks')" data-page="picks">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span>Picks</span>
+      </button>
+      <button class="nav-btn" onclick="goToPage('ranking')" data-page="ranking">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Rankings</span>
+      </button>
+      <button class="nav-btn" onclick="goToPage('profile')" data-page="profile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
